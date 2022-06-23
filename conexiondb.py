@@ -45,7 +45,7 @@ class ConexionFirebase:
            "direccion": direccion
         })
         return nex_box_ref.key
-    def login2(self,name,password):
+    def login(self,name,password):
         ref = db.reference('User')
         snapshot =  ref.order_by_key().get()
         status = False

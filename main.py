@@ -1,6 +1,7 @@
 import os
 from flask import Flask, jsonify,request
 import uuid
+import re
 
 app = Flask(__name__)
 
@@ -9,7 +10,7 @@ from conexiondb import ConexionFirebase
 
 
 conexion_firebase = ConexionFirebase(
-    "tokkioedit-firebase-adminsdk-x4apd-2678ed0d77.json",
+    "K:/UP/Cuatrimestre 8/Mantenimiento de software/Corte 2/Proyecto\Backend/backend-bioapp/tokkioedit-firebase-adminsdk-x4apd-2678ed0d77.json",
     "https://tokkioedit-default-rtdb.firebaseio.com/"
 )
 
@@ -33,20 +34,29 @@ def addUser():
         "status": "true",
         "key": conexion_firebase.add_user2(name,password)
     })
-    
 
 @app.route("/login")
 def login():
     name = request.args['name']
-    password = request.args['password']
-    data = conexion_firebase.login2(name,password)
-    print(data)
-    print(data["status"])
+    if validarNombre(name)[1]:
+        password = request.args['password']
+        data = conexion_firebase.login(name,password)
+        status = data["status"]
+        id = data["id"]
+    else :
+        status = False
+        id = ''
+
     return jsonify({
-        "status": data["status"],
-        "id": data["id"]
+        "status": status,
+        "id": id
     })
 
+def validarNombre(name):
+    expresion = re.compile(r'^[a-zA-Z][a-zA-Z]*$')
+    if expresion.match(name):
+        return ['Nombre valido', True]
+    return ['Nombre incorrecto', False]
 
 @app.route("/busqueda",methods=["POST"])
 def prueba():
