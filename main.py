@@ -1,6 +1,7 @@
 import os
 from flask import Flask, jsonify,request
 import uuid
+import re
 
 app = Flask(__name__)
 
@@ -9,7 +10,7 @@ from conexiondb import ConexionFirebase
 
 
 conexion_firebase = ConexionFirebase(
-    "tokkioedit-firebase-adminsdk-x4apd-2678ed0d77.json",
+    "K:/UP/Cuatrimestre 8/Mantenimiento de software/Corte 2/Proyecto\Backend/backend-bioapp/tokkioedit-firebase-adminsdk-x4apd-2678ed0d77.json",
     "https://tokkioedit-default-rtdb.firebaseio.com/"
 )
 
@@ -33,20 +34,29 @@ def addUser():
         "status": "true",
         "key": conexion_firebase.add_user2(name,password)
     })
-    
 
 @app.route("/login")
 def login():
+    status = False
+    id = ''
     name = request.args['name']
-    password = request.args['password']
-    data = conexion_firebase.login2(name,password)
-    print(data)
-    print(data["status"])
+    if validarNombre(name)[1]:
+        password = request.args['password']
+        data = conexion_firebase.login(name, password)
+        status = data["status"]
+        id = data["id"]
+
+
     return jsonify({
-        "status": data["status"],
-        "id": data["id"]
+        "status": status,
+        "id": id
     })
 
+def validarNombre(name):
+    expresion = re.compile(r'^[a-zA-Z][a-zA-Z]*$')
+    if expresion.match(name):
+        return ['Nombre valido', True]
+    return ['Nombre incorrecto', False]
 
 @app.route("/busqueda",methods=["POST"])
 def prueba():
@@ -56,6 +66,24 @@ def prueba():
         "status": "true",
         "value":conexion_firebase.busqueda(palabra)
     })
+
+@app.route("/add-datos-paciente", methods=["POST"])
+def datos():
+    json_response = request.get_json(force=True)
+    datos = list()
+    datos.append(json_response['id'])
+    datos.append(json_response['ecg']) #ecg = json_response['ecg']
+    datos.append(json_response['temperatura']) #temperatura = json_response['temperatura']
+    datos.append(json_response['vpm']) #vpm = json_response['vpm']
+    datos.append(json_response['saturacionOxigeno']) #saturacionOxigeno = json_response['saturacion-oxigeno']
+    datos.append(json_response['pam']) #pam = json_response['pam']
+    datos.append(json_response['indice-shock']) #indiceShock = json_response['indice-shock']
+
+    conexion_firebase.addDatosPaciente(datos)
+
+    return jsonify({'status':True})
+
+
 
 @app.route("/add-paciente",methods=["POST"])
 def registrarPaciente():

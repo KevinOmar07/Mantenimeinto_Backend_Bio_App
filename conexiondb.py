@@ -7,7 +7,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class ConexionFirebase:
-
     
     def __init__(self,credencial,ruta) -> None:
         self.credencial = credencial
@@ -16,8 +15,6 @@ class ConexionFirebase:
     def init_firebase(self):
         firebase_sdk = credentials.Certificate(self.credencial)
         firebase_admin.initialize_app(firebase_sdk,{"databaseURL":self.ruta})
-
-    
 
     def add_user2(self,name,password):
         ref = db.reference("User")
@@ -45,7 +42,7 @@ class ConexionFirebase:
            "direccion": direccion
         })
         return nex_box_ref.key
-    def login2(self,name,password):
+    def login(self,name,password):
         ref = db.reference('User')
         snapshot =  ref.order_by_key().get()
         status = False
@@ -86,51 +83,22 @@ class ConexionFirebase:
         else:
             return "ya"
 
-    # def get_user(self):
-    #     users = []
-    #     ref = db.reference('User')
-    #     snapshot = ref.order_by_key().get()
-    #     for key, val in snapshot.items():
-    #         users.append({
-    #             "id": key,
-    #             "data": val
-    #         })
-    #     return jsonify(users)
     def busqueda(self,palabra):
         ref = db.reference("Paciente").order_by_child("nombreMascota").start_at(palabra).end_at(palabra+'\uf8ff')
         print(list(ref.get().items()))
         return list(ref.get().items())
 
-    # def login(self,name,password):
-    #     ref = db.reference('User')
-    #     snapshot =  ref.order_by_key().get()
-    #     status = False
-    #     keyUser = ""
-    #     profileImg = ""
-    #     nameUser = ""
-    #     if ref.get() != None:
-    #         for key, val in snapshot.items():
-    #             if check_password_hash(val['password'],password):
-    #                 print("entro passwrod")
-    #                 if val['name'] == name:
-    #                     print("entro name")
-    #                     status = True
-    #                     keyUser = key
-    #                     profileImg = val['profile-img']
-    #                     nameUser = val['name']
-    #                     break
-    #             else:
-    #                 status = False
-    #     print(status)
-    #     return {"status": status, "data": keyUser, "profile": profileImg,"name":nameUser}
-
-    # def add_img(self,img,key,desp):
-    #     ref =  db.reference('/Photo')
-    #     ref.push({
-    #         "key": key,
-    #         "img": img,
-    #         "descripcion": desp
-    #     })
+    def addDatosPaciente(self, datos):
+        ref = db.reference('DatosPaciente')
+        ref.push({
+            "id": datos[0],
+            "ecg": datos[1],
+            "temperatura": datos[2],
+            "vpm": datos[3],
+            "saturacionOxigeno": datos[4],
+            "pam": datos[5],
+            "indice-shock": datos[6],
+        })
 
     def getImageUserKey(self,keyUser):
         photoUser = []
