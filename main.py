@@ -82,7 +82,6 @@ def registrarPaciente():
     statusNM = validar.validar_string_add_paciente(nombreMascota)
     statusND = validar.validar_string_add_paciente(nombreDueño)
 
-
     statusEM = validar.validar_edad_y_numero(edadMascota)
     statusPM = validar.validar_peso(pesoMascota)
     statusNC = validar.validar_edad_y_numero(numeroContacto)
