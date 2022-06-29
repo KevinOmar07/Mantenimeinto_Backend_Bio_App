@@ -18,7 +18,7 @@ conexion_firebase.init_firebase()
 @app.route("/")
 def rutaRaiz():
     return jsonify({
-        "status":"raiz"
+        "status":"En ejecucion"
     })
 
 
@@ -33,7 +33,7 @@ def addUser():
     password = json_response['password']
 
     if validar.validar_nombre(name)[1]:
-        datos = conexion_firebase.add_user(name, password)
+        datos = conexion_firebase.add_user2(name, password)
         status = True
 
     return jsonify({
@@ -57,13 +57,21 @@ def login():
         "id": id
     })
 
-@app.route("/busqueda",methods=["POST"])
-def prueba():
+@app.route("/busqueda", methods=["POST"])
+def busqueda():
+    status = False
+    dato = ''
+
     json_response = request.get_json(force=True)
     palabra = json_response["palabra"]
+
+    if validar.validar_palabra(palabra):
+        status = True
+        dato = conexion_firebase.busqueda(palabra)
+
     return jsonify({
-        "status": "true",
-        "value":conexion_firebase.busqueda(palabra)
+        "status": status,
+        "value": dato
     })
 
 @app.route("/add-paciente",methods=["POST"])
