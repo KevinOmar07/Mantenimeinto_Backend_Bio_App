@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class ConexionFirebase:
     
-    def __init__(self,credencial,ruta) -> None:
+    def __init__(self, credencial, ruta) -> None:
         self.credencial = credencial
         self.ruta = ruta
     
@@ -16,7 +16,7 @@ class ConexionFirebase:
         firebase_sdk = credentials.Certificate(self.credencial)
         firebase_admin.initialize_app(firebase_sdk,{"databaseURL":self.ruta})
 
-    def add_user2(self,name,password):
+    def add_user2(self, name, password):
         ref = db.reference("User")
         print("llego aqui")
         nex_box_ref = ref.push({
