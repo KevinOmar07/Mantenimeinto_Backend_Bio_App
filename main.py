@@ -1,14 +1,12 @@
 import os
 from flask import Flask, jsonify,request
+from conexiondb import ConexionFirebase
+from validacion_datos import Validacion_datos
 import uuid
-import re
 
 app = Flask(__name__)
 
-
-from conexiondb import ConexionFirebase
-
-
+validar = Validacion_datos()
 conexion_firebase = ConexionFirebase(
     "K:/UP/Cuatrimestre 8/Mantenimiento de software/Corte 2/Proyecto\Backend/backend-bioapp/tokkioedit-firebase-adminsdk-x4apd-2678ed0d77.json",
     "https://tokkioedit-default-rtdb.firebaseio.com/"
@@ -40,23 +38,16 @@ def login():
     status = False
     id = ''
     name = request.args['name']
-    if validarNombre(name)[1]:
+    if validar.validar_nombre(name)[1]:
         password = request.args['password']
         data = conexion_firebase.login(name, password)
         status = data["status"]
         id = data["id"]
 
-
     return jsonify({
         "status": status,
         "id": id
     })
-
-def validarNombre(name):
-    expresion = re.compile(r'^[a-zA-Z][a-zA-Z]*$')
-    if expresion.match(name):
-        return ['Nombre valido', True]
-    return ['Nombre incorrecto', False]
 
 @app.route("/busqueda",methods=["POST"])
 def prueba():
@@ -67,27 +58,11 @@ def prueba():
         "value":conexion_firebase.busqueda(palabra)
     })
 
-@app.route("/add-datos-paciente", methods=["POST"])
-def datos():
-    json_response = request.get_json(force=True)
-    datos = list()
-    datos.append(json_response['id'])
-    datos.append(json_response['ecg']) #ecg = json_response['ecg']
-    datos.append(json_response['temperatura']) #temperatura = json_response['temperatura']
-    datos.append(json_response['vpm']) #vpm = json_response['vpm']
-    datos.append(json_response['saturacionOxigeno']) #saturacionOxigeno = json_response['saturacion-oxigeno']
-    datos.append(json_response['pam']) #pam = json_response['pam']
-    datos.append(json_response['indice-shock']) #indiceShock = json_response['indice-shock']
-
-    conexion_firebase.addDatosPaciente(datos)
-
-    return jsonify({'status':True})
-
-
-
 @app.route("/add-paciente",methods=["POST"])
 def registrarPaciente():
     json_response = request.get_json(force=True)
+
+    status = False
     
     idp = json_response["id"]
     nombreVeterinario = json_response["nombre-veterinario"]
@@ -98,33 +73,32 @@ def registrarPaciente():
     sexoMascota = json_response["sexo-mascota"]
     razonMascota = json_response["razon-mascota"]
     estadoMascota = json_response["estado-mascota"]
-    nombreMueño = json_response["nombre-dueño"]
+    nombreDueño = json_response["nombre-dueño"]
     numeroContacto = json_response["numero-contacto"]
     direccion = json_response["direccion"]
+
+    status = True
     key=conexion_firebase.add_pasiente(
-        idp,
-        nombreVeterinario,
-        nombreMascota,
-        edadMascota,
-        pesoMascota,
-        razaMascota,
-        sexoMascota,
-        razonMascota,
-        estadoMascota,
-        nombreMueño,
-        numeroContacto,
-        direccion
-        )
+            idp,
+            nombreVeterinario,
+            nombreMascota,
+            edadMascota,
+            pesoMascota,
+            razaMascota,
+            sexoMascota,
+            razonMascota,
+            estadoMascota,
+            nombreDueño,
+            numeroContacto,
+            direccion
+            )
     return jsonify({
-        "status": "true",
+        "status": status,
         "key": key
     })
-    pass
+
 def iniciarServe():
     app.run(host="0.0.0.0")
-
-
-
 
 if __name__ == "__main__":
     iniciarServe()

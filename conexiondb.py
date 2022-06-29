@@ -66,8 +66,6 @@ class ConexionFirebase:
             "id": keyUser
         }
 
-
-
     def add_user(self,name,password,img,mail):
         ref = db.reference('User')
         resp = self.login(name,password)
@@ -87,18 +85,6 @@ class ConexionFirebase:
         ref = db.reference("Paciente").order_by_child("nombreMascota").start_at(palabra).end_at(palabra+'\uf8ff')
         print(list(ref.get().items()))
         return list(ref.get().items())
-
-    def addDatosPaciente(self, datos):
-        ref = db.reference('DatosPaciente')
-        ref.push({
-            "id": datos[0],
-            "ecg": datos[1],
-            "temperatura": datos[2],
-            "vpm": datos[3],
-            "saturacionOxigeno": datos[4],
-            "pam": datos[5],
-            "indice-shock": datos[6],
-        })
 
     def getImageUserKey(self,keyUser):
         photoUser = []
