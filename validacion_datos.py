@@ -8,6 +8,12 @@ class Validacion_datos:
             return ['Nombre valido', True]
         return ['Nombre incorrecto', False]
 
+    def validar_palabra(self, name):
+        expresion = re.compile(r'^[a-zA-Z][a-zA-Z]*$')
+        if expresion.match(name):
+            return True
+        return False
+
     def validar_string_add_paciente(self, name):
         expresion = re.compile(r'^[a-zA-Z -\']+$')
         if expresion.match(name):
