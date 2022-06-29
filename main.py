@@ -24,13 +24,21 @@ def rutaRaiz():
 
 @app.route("/add-user",methods=["POST"])
 def addUser():
+
+    status = False
+    datos = ''
+
     json_response = request.get_json(force=True)
     name = json_response['name']
     password = json_response['password']
 
+    if validar.validar_nombre(name)[1]:
+        datos = conexion_firebase.add_user(name, password)
+        status = True
+
     return jsonify({
-        "status": "true",
-        "key": conexion_firebase.add_user2(name,password)
+        "status": status,
+        "key": datos
     })
 
 @app.route("/login")
