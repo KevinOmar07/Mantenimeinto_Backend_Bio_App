@@ -63,6 +63,7 @@ def registrarPaciente():
     json_response = request.get_json(force=True)
 
     status = False
+    key = ""
     
     idp = json_response["id"]
     nombreVeterinario = json_response["nombre-veterinario"]
@@ -77,8 +78,17 @@ def registrarPaciente():
     numeroContacto = json_response["numero-contacto"]
     direccion = json_response["direccion"]
 
-    status = True
-    key=conexion_firebase.add_pasiente(
+    statusNV = validar.validar_string_add_paciente(nombreVeterinario)
+    statusNM = validar.validar_string_add_paciente(nombreMascota)
+    statusND = validar.validar_string_add_paciente(nombreDueño)
+
+    statusEM = validar.validar_edad_y_numero(edadMascota)
+    statusPM = validar.validar_peso(pesoMascota)
+    statusNC = validar.validar_edad_y_numero(numeroContacto)
+
+    if (statusNV and statusNM and statusND and statusEM and statusPM and statusNC):
+        status = True
+        key=conexion_firebase.add_pasiente(
             idp,
             nombreVeterinario,
             nombreMascota,
