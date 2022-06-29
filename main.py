@@ -123,6 +123,22 @@ def registrarPaciente():
         "key": key
     })
 
+@app.route("/add-datos-paciente", methods=["POST"])
+def datos():
+    json_response = request.get_json(force=True)
+    datos = list()
+    datos.append(json_response['id'])
+    datos.append(json_response['ecg']) #ecg = json_response['ecg']
+    datos.append(json_response['temperatura']) #temperatura = json_response['temperatura']
+    datos.append(json_response['vpm']) #vpm = json_response['vpm']
+    datos.append(json_response['saturacionOxigeno']) #saturacionOxigeno = json_response['saturacion-oxigeno']
+    datos.append(json_response['pam']) #pam = json_response['pam']
+    datos.append(json_response['indice-shock']) #indiceShock = json_response['indice-shock']
+
+    conexion_firebase.add_datos_paciente(datos)
+
+    return jsonify({'status':True})
+
 def iniciarServe():
     app.run(host="0.0.0.0")
 

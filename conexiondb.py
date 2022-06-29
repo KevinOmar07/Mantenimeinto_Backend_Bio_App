@@ -86,6 +86,19 @@ class ConexionFirebase:
         print(list(ref.get().items()))
         return list(ref.get().items())
 
+    def add_datos_paciente(self, datos):
+        ref = db.reference('DatosPaciente')
+        ref.push({
+            "id": datos[0],
+            "ecg": datos[1],
+            "temperatura": datos[2],
+            "vpm": datos[3],
+            "saturacionOxigeno": datos[4],
+            "pam": datos[5],
+            "indice-shock": datos[6],
+        })
+
+
     def getImageUserKey(self,keyUser):
         photoUser = []
         ref = db.reference("Photo")
